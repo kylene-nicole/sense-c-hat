@@ -3,22 +3,7 @@
 import time
 import smbus
 import math
-Gyro  = [0,0,0]
-Accel = [0,0,0]
-Mag   = [0,0,0]
-pitch = 0.0
-roll  = 0.0
-yaw   = 0.0
-pu8data=[0,0,0,0,0,0,0,0]
-U8tempX=[0,0,0,0,0,0,0,0,0]
-U8tempY=[0,0,0,0,0,0,0,0,0]
-U8tempZ=[0,0,0,0,0,0,0,0,0]
-GyroOffset=[0,0,0]
-Ki = 1.0
-Kp = 4.50
-q0 = 1.0
-q1=q2=q3=0.0
-angles=[0.0,0.0,0.0]
+
 true                                 =0x01
 false                                =0x00
 # define QMI8658 and AK09918 Device I2C address
@@ -128,6 +113,22 @@ class IMU(object):
   def __init__(self):
     self._bus = smbus.SMBus(1)
     self.MotionVal=[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
+    self.Gyro = [0, 0, 0]
+    self.Accel = [0, 0, 0]
+    self.Mag = [0, 0, 0]
+    self.pitch = 0.0
+    self.roll = 0.0
+    self.yaw = 0.0
+    self.pu8data = [0] * 8
+    self.U8tempX = [0] * 8
+    self.U8tempY = [0] * 8
+    self.U8tempZ = [0] * 8
+    self.GyroOffset = [0, 0, 0]
+    self.Ki = 1.0
+    self.Kp = 4.50
+    self.q0 = 1.0
+    self.q1 = self.q2 = self.q3 = 0.0
+    self.angles = [0.0, 0.0, 0.0]
 
     if self._read_byte(I2C_ADD_IMU_QMI8658,0x00) != 0x05:
       print("QMI8658_init fail\n")
@@ -166,37 +167,37 @@ class IMU(object):
 
   def QMI8658_Gyro_Accel_Read(self):
     data =self._read_block(I2C_ADD_IMU_QMI8658,QMI8658Register_Ax_L, 12)
-    Accel[0] = (data[1]<<8)|data[0]
-    Accel[1] = (data[3]<<8)|data[2]
-    Accel[2] = (data[5]<<8)|data[4]
+    self.Accel[0] = (data[1]<<8)|data[0]
+    self.Accel[1] = (data[3]<<8)|data[2]
+    self.Accel[2] = (data[5]<<8)|data[4]
     Gyro[0]  = ((data[7]<<8)|data[6]) - GyroOffset[0]
     Gyro[1]  = ((data[9]<<8)|data[8]) - GyroOffset[1]
     Gyro[2]  = ((data[11]<<8)|data[10]) - GyroOffset[2]
     # print(data)
-    if Accel[0]>=32767:             #Solve the problem that Python shift will not overflow
-      Accel[0]=Accel[0]-65535
-    elif Accel[0]<=-32767:
-      Accel[0]=Accel[0]+65535
-    if Accel[1]>=32767:
-      Accel[1]=Accel[1]-65535
-    elif Accel[1]<=-32767:
-      Accel[1]=Accel[1]+65535
-    if Accel[2]>=32767:
-      Accel[2]=Accel[2]-65535
-    elif Accel[2]<=-32767:
-      Accel[2]=Accel[2]+65535
-    if Gyro[0]>=32767:
-      Gyro[0]=Gyro[0]-65535
-    elif Gyro[0]<=-32767:
-      Gyro[0]=Gyro[0]+65535
-    if Gyro[1]>=32767:
-      Gyro[1]=Gyro[1]-65535
-    elif Gyro[1]<=-32767:
-      Gyro[1]=Gyro[1]+65535
-    if Gyro[2]>=32767:
-      Gyro[2]=Gyro[2]-65535
-    elif Gyro[2]<=-32767:
-      Gyro[2]=Gyro[2]+65535
+    if self.Accel[0]>=32767:             #Solve the problem that Python shift will not overflow
+      self.Accel[0]=self.Accel[0]-65535
+    elif self.Accel[0]<=-32767:
+      self.Accel[0]=self.Accel[0]+65535
+    if self.Accel[1]>=32767:
+      self.Accel[1]=self.Accel[1]-65535
+    elif self.Accel[1]<=-32767:
+      self.Accel[1]=self.Accel[1]+65535
+    if self.Accel[2]>=32767:
+      self.Accel[2]=self.Accel[2]-65535
+    elif self.Accel[2]<=-32767:
+      self.Accel[2]=self.Accel[2]+65535
+    if self.Gyro[0]>=32767:
+      self.Gyro[0]=self.Gyro[0]-65535
+    elif self.Gyro[0]<=-32767:
+      self.Gyro[0]=self.Gyro[0]+65535
+    if self.Gyro[1]>=32767:
+      self.Gyro[1]=self.Gyro[1]-65535
+    elif self.Gyro[1]<=-32767:
+      self.Gyro[1]=self.Gyro[1]+65535
+    if self.Gyro[2]>=32767:
+      self.Gyro[2]=self.Gyro[2]-65535
+    elif self.Gyro[2]<=-32767:
+      self.Gyro[2]=self.Gyro[2]+65535
 
   def AK09918_MagRead(self):
     counter = 20
@@ -210,24 +211,24 @@ class IMU(object):
     if counter!=0:
       for i in range(0,8):
         pu8data =self._read_block(I2C_ADD_IMU_AK09918,AK09918_HXL, 8)
-        U8tempX[i] = (pu8data[1]<<8)|pu8data[0]
-        U8tempY[i] = (pu8data[3]<<8)|pu8data[2]
-        U8tempZ[i] = (pu8data[5]<<8)|pu8data[4]
-      Mag[0]=(U8tempX[0]+U8tempX[1]+U8tempX[2]+U8tempX[3]+U8tempX[4]+U8tempX[5]+U8tempX[6]+U8tempX[7])/8
-      Mag[1]=(U8tempY[0]+U8tempY[1]+U8tempY[2]+U8tempY[3]+U8tempY[4]+U8tempY[5]+U8tempY[6]+U8tempY[7])/8
-      Mag[2]=(U8tempZ[0]+U8tempZ[1]+U8tempZ[2]+U8tempZ[3]+U8tempZ[4]+U8tempZ[5]+U8tempZ[6]+U8tempZ[7])/8
-    if Mag[0]>=32767:            #Solve the problem that Python shift will not overflow
-      Mag[0]=Mag[0]-65535
-    elif Mag[0]<=-32767:
-      Mag[0]=Mag[0]+65535
-    if Mag[1]>=32767:
-      Mag[1]=Mag[1]-65535
-    elif Mag[1]<=-32767:
-      Mag[1]=Mag[1]+65535
-    if Mag[2]>=32767:
-      Mag[2]=Mag[2]-65535
-    elif Mag[2]<=-32767:
-      Mag[2]=Mag[2]+65535
+        self.U8tempX[i] = (pu8data[1]<<8)|pu8data[0]
+        self.U8tempY[i] = (pu8data[3]<<8)|pu8data[2]
+        self.U8tempZ[i] = (pu8data[5]<<8)|pu8data[4]
+      self.Mag[0]=(self.U8tempX[0]+self.U8tempX[1]+self.U8tempX[2]+self.U8tempX[3]+self.U8tempX[4]+self.U8tempX[5]+self.U8tempX[6]+self.U8tempX[7])/8
+      self.Mag[1]=(self.U8tempY[0]+self.U8tempY[1]+self.U8tempY[2]+self.U8tempY[3]+self.U8tempY[4]+self.U8tempY[5]+self.U8tempY[6]+self.U8tempY[7])/8
+      self.Mag[2]=(self.U8tempZ[0]+self.U8tempZ[1]+self.U8tempZ[2]+self.U8tempZ[3]+self.U8tempZ[4]+self.U8tempZ[5]+self.U8tempZ[6]+self.U8tempZ[7])/8
+    if self.Mag[0]>=32767:            #Solve the problem that Python shift will not overflow
+      self.Mag[0]=self.Mag[0]-65535
+    elif self.Mag[0]<=-32767:
+      self.Mag[0]=self.Mag[0]+65535
+    if self.Mag[1]>=32767:
+      self.Mag[1]=self.Mag[1]-65535
+    elif self.Mag[1]<=-32767:
+      self.Mag[1]=self.Mag[1]+65535
+    if self.Mag[2]>=32767:
+      self.Mag[2]=self.Mag[2]-65535
+    elif self.Mag[2]<=-32767:
+      self.Mag[2]=self.Mag[2]+65535
 
   def QMI8658_readTemp(self):
       temp = self._read_block(I2C_ADD_IMU_QMI8658,QMI8658Register_Tempearture_L, 2)
@@ -239,13 +240,13 @@ class IMU(object):
     s32TempGz = 0
     for i in range(0,32):
       self.QMI8658_Gyro_Accel_Read()
-      s32TempGx += Gyro[0]
-      s32TempGy += Gyro[1]
-      s32TempGz += Gyro[2]
+      s32TempGx += self.Gyro[0]
+      s32TempGy += self.Gyro[1]
+      s32TempGz += self.Gyro[2]
       time.sleep(0.01)
-    GyroOffset[0] = s32TempGx >> 5
-    GyroOffset[1] = s32TempGy >> 5
-    GyroOffset[2] = s32TempGz >> 5
+    self.GyroOffset[0] = s32TempGx >> 5
+    self.GyroOffset[1] = s32TempGy >> 5
+    self.GyroOffset[2] = s32TempGz >> 5
 
   def imuAHRSupdate(self,gx, gy,gz,ax,ay,az,mx,my,mz):    
     norm=0.0

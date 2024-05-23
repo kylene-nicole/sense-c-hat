@@ -20,24 +20,7 @@ SHTC3_NM_CD_ReadTH  = 0x7866
 SHTC3_NM_CD_ReadRH  = 0x58E0
 # SHTC3 end
 
-Gyro  = [0,0,0]
-Accel = [0,0,0]
-Mag   = [0,0,0]
-pitch = 0.0
-roll  = 0.0
-yaw   = 0.0
-pu8data=[0,0,0,0,0,0,0,0]
-U8tempX=[0,0,0,0,0,0,0,0,0]
-U8tempY=[0,0,0,0,0,0,0,0,0]
-U8tempZ=[0,0,0,0,0,0,0,0,0]
-GyroOffset=[0,0,0]
-Ki = 1.0
-Kp = 4.50
-q0 = 1.0
-q1=q2=q3=0.0
-angles=[0.0,0.0,0.0]
-true                                 =0x01
-false                                =0x00
+
 # define QMI8658 and AK09918 Device I2C address
 I2C_ADD_IMU_QMI8658                  = 0x6B
 I2C_ADD_IMU_AK09918                  = 0x0C
