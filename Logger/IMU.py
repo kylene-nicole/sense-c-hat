@@ -127,6 +127,8 @@ AK09918_SELF_TEST         = 0x10 # ignored by switchMode() and initialize(), cal
 class IMU(object):
   def __init__(self):
     self._bus = smbus.SMBus(1)
+    self.MotionVal=[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
+
     if self._read_byte(I2C_ADD_IMU_QMI8658,0x00) != 0x05:
       print("QMI8658_init fail\n")
       return 0
@@ -318,15 +320,15 @@ class IMU(object):
     q3 = q3 * norm
 
   def icm20948CalAvgValue(self):
-    MotionVal[0]=Gyro[0]/32.8
-    MotionVal[1]=Gyro[1]/32.8
-    MotionVal[2]=Gyro[2]/32.8
-    MotionVal[3]=Accel[0]
-    MotionVal[4]=Accel[1]
-    MotionVal[5]=Accel[2]
-    MotionVal[6]=Mag[0]
-    MotionVal[7]=Mag[1]
-    MotionVal[8]=Mag[2]
+    self.MotionVal[0]=Gyro[0]/32.8
+    self.MotionVal[1]=Gyro[1]/32.8
+    self.MotionVal[2]=Gyro[2]/32.8
+    self.MotionVal[3]=Accel[0]
+    self.MotionVal[4]=Accel[1]
+    self.MotionVal[5]=Accel[2]
+    self.MotionVal[6]=Mag[0]
+    self.MotionVal[7]=Mag[1]
+    self.MotionVal[8]=Mag[2]
     
 if __name__ == '__main__':
   import time
