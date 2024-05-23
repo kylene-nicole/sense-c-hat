@@ -20,6 +20,12 @@ SHTC3_NM_CD_ReadTH  = 0x7866
 SHTC3_NM_CD_ReadRH  = 0x58E0
 # SHTC3 end
 
+# IMU start
+q0 = 1.0
+q1 = q2 = q3 = 0.0
+angles = [0.0, 0.0, 0.0]
+# IMU end
+
 
 # define QMI8658 and AK09918 Device I2C address
 I2C_ADD_IMU_QMI8658                  = 0x6B
@@ -152,9 +158,9 @@ def log_imu(imu_sensor):
                              imu_sensor.MotionVal[3], imu_sensor.MotionVal[4], imu_sensor.MotionVal[5], 
                              imu_sensor.MotionVal[6], imu_sensor.MotionVal[7], imu_sensor.MotionVal[8])
     imu_data = {
-        "roll": math.asin(-2 * imu_sensor.q1 * imu_sensor.q3 + 2 * imu_sensor.q0 * imu_sensor.q2) * 57.3,
-        "pitch": math.atan2(2 * imu_sensor.q2 * imu_sensor.q3 + 2 * imu_sensor.q0 * imu_sensor.q1, -2 * imu_sensor.q1 * imu_sensor.q1 - 2 * imu_sensor.q2 * imu_sensor.q2 + 1) * 57.3,
-        "yaw": math.atan2(-2 * imu_sensor.q1 * imu_sensor.q2 - 2 * imu_sensor.q0 * imu_sensor.q3, 2 * imu_sensor.q2 * imu_sensor.q2 + 2 * imu_sensor.q3 * imu_sensor.q3 - 1) * 57.3,
+        "roll": math.asin(-2 * q1 * q3 + 2 * q0 * q2) * 57.3,
+        "pitch": math.atan2(2 * q2 * q3 + 2 * q0 * q1, -2 * q1 * q1 - 2 * q2 * q2 + 1) * 57.3,
+        "yaw": math.atan2(-2 * q1 * q2 - 2 * q0 * q3, 2 * q2 * q2 + 2 * q3 * q3 - 1) * 57.3,
         "temp": imu_sensor.QMI8658_readTemp(),
         "accel_x": imu_sensor.Accel[0],
         "accel_y": imu_sensor.Accel[1],

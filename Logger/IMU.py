@@ -109,6 +109,10 @@ AK09918_CONTINUOUS_100HZ = 0x08
 AK09918_SELF_TEST         = 0x10 # ignored by switchMode() and initialize(), call selfTest() to use this mode
 # define AK09918 Register  end
 
+q0 = 1.0
+q1 = q2 = q3 = 0.0
+angles = [0.0, 0.0, 0.0]
+
 class IMU(object):
   def __init__(self):
     self._bus = smbus.SMBus(1)
@@ -126,9 +130,7 @@ class IMU(object):
     self.GyroOffset = [0, 0, 0]
     self.Ki = 1.0
     self.Kp = 4.50
-    self.q0 = 1.0
-    self.q1 = self.q2 = self.q3 = 0.0
-    self.angles = [0.0, 0.0, 0.0]
+  
 
     if self._read_byte(I2C_ADD_IMU_QMI8658,0x00) != 0x05:
       print("QMI8658_init fail\n")
