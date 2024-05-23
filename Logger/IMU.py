@@ -170,9 +170,9 @@ class IMU(object):
     self.Accel[0] = (data[1]<<8)|data[0]
     self.Accel[1] = (data[3]<<8)|data[2]
     self.Accel[2] = (data[5]<<8)|data[4]
-    Gyro[0]  = ((data[7]<<8)|data[6]) - GyroOffset[0]
-    Gyro[1]  = ((data[9]<<8)|data[8]) - GyroOffset[1]
-    Gyro[2]  = ((data[11]<<8)|data[10]) - GyroOffset[2]
+    self.Gyro[0]  = ((data[7]<<8)|data[6]) - self.GyroOffset[0]
+    self.Gyro[1]  = ((data[9]<<8)|data[8]) - self.GyroOffset[1]
+    self.Gyro[2]  = ((data[11]<<8)|data[10]) - self.GyroOffset[2]
     # print(data)
     if self.Accel[0]>=32767:             #Solve the problem that Python shift will not overflow
       self.Accel[0]=self.Accel[0]-65535
@@ -301,13 +301,13 @@ class IMU(object):
     ez = (ax * vy - ay * vx) + (mx * wy - my * wx)
 
     if (ex != 0.0 and ey != 0.0 and ez != 0.0):
-      exInt = exInt + ex * Ki * halfT
-      eyInt = eyInt + ey * Ki * halfT  
-      ezInt = ezInt + ez * Ki * halfT
+      exInt = exInt + ex * self.Ki * halfT
+      eyInt = eyInt + ey * self.Ki * halfT  
+      ezInt = ezInt + ez * self.Ki * halfT
 
-      gx = gx + Kp * ex + exInt
-      gy = gy + Kp * ey + eyInt
-      gz = gz + Kp * ez + ezInt
+      gx = gx + self.Kp * ex + exInt
+      gy = gy + self.Kp * ey + eyInt
+      gz = gz + self.Kp * ez + ezInt
 
     q0 = q0 + (-q1 * gx - q2 * gy - q3 * gz) * halfT
     q1 = q1 + (q0 * gx + q2 * gz - q3 * gy) * halfT
@@ -321,37 +321,36 @@ class IMU(object):
     q3 = q3 * norm
 
   def icm20948CalAvgValue(self):
-    self.MotionVal[0]=Gyro[0]/32.8
-    self.MotionVal[1]=Gyro[1]/32.8
-    self.MotionVal[2]=Gyro[2]/32.8
-    self.MotionVal[3]=Accel[0]
-    self.MotionVal[4]=Accel[1]
-    self.MotionVal[5]=Accel[2]
-    self.MotionVal[6]=Mag[0]
-    self.MotionVal[7]=Mag[1]
-    self.MotionVal[8]=Mag[2]
+    self.MotionVal[0]=self.Gyro[0]/32.8
+    self.MotionVal[1]=self.Gyro[1]/32.8
+    self.MotionVal[2]=self.Gyro[2]/32.8
+    self.MotionVal[3]=self.Accel[0]
+    self.MotionVal[4]=self.Accel[1]
+    self.MotionVal[5]=self.Accel[2]
+    self.MotionVal[6]=self.Mag[0]
+    self.MotionVal[7]=self.Mag[1]
+    self.MotionVal[8]=self.Mag[2]
     
 if __name__ == '__main__':
   import time
   print("\nSense HAT Test Program ...\n")
-  MotionVal=[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
   imu=IMU()
   while True:
     try:
         imu.QMI8658_Gyro_Accel_Read()
         imu.AK09918_MagRead()
         imu.icm20948CalAvgValue()
-        imu.imuAHRSupdate(MotionVal[0] * 0.0175, MotionVal[1] * 0.0175,MotionVal[2] * 0.0175,
-                    MotionVal[3],MotionVal[4],MotionVal[5], 
-                    MotionVal[6], MotionVal[7], MotionVal[8])
+        imu.imuAHRSupdate(imu.MotionVal[0] * 0.0175, imu.MotionVal[1] * 0.0175,imu.MotionVal[2] * 0.0175,
+                    imu.MotionVal[3],imu.MotionVal[4],imu.MotionVal[5], 
+                    imu.MotionVal[6], imu.MotionVal[7], imu.MotionVal[8])
         pitch = math.asin(-2 * q1 * q3 + 2 * q0* q2)* 57.3
         roll  = math.atan2(2 * q2 * q3 + 2 * q0 * q1, -2 * q1 * q1 - 2 * q2* q2 + 1)* 57.3
         yaw   = math.atan2(-2 * q1 * q2 - 2 * q0 * q3, 2 * q2 * q2 + 2 * q3 * q3 - 1) * 57.3
         print("\r\n /-------------------------------------------------------------/ \r\n")
         print('\r\n Roll = %.2f , Pitch = %.2f , Yaw = %.2f\r\n'%(roll,pitch,yaw))
-        print('\r\nAcceleration:  X = %d , Y = %d , Z = %d\r\n'%(Accel[0],Accel[1],Accel[2]))  
-        print('\r\nGyroscope:     X = %d , Y = %d , Z = %d\r\n'%(Gyro[0],Gyro[1],Gyro[2]))
-        print('\r\nMagnetic:      X = %d , Y = %d , Z = %d\r\n'%((Mag[0]),Mag[1],Mag[2]))
+        print('\r\nAcceleration:  X = %d , Y = %d , Z = %d\r\n'%(imu.Accel[0],imu.Accel[1],imu.Accel[2]))  
+        print('\r\nGyroscope:     X = %d , Y = %d , Z = %d\r\n'%(imu.Gyro[0],imu.Gyro[1],imu.Gyro[2]))
+        print('\r\nMagnetic:      X = %d , Y = %d , Z = %d\r\n'%((imu.Mag[0]),imu.Mag[1],imu.Mag[2]))
         print("QMITemp=%.2f C\r\n"%imu.QMI8658_readTemp())
         time.sleep(0.1)
     except(KeyboardInterrupt):
