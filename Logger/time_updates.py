@@ -13,8 +13,12 @@ def on_message(client, userdata, msg):
         new_time = datetime.datetime.strptime(received_time, '%Y-%m-%d %H:%M:%S')
         subprocess.run(['sudo', 'date', '-s', new_time.strftime('%Y-%m-%d %H:%M:%S')], check=True)
         print(f"System time updated to: {received_time}")
+    except ValueError as ve:
+        print(f"Date format error: {ve}")
+    except subprocess.CalledProcessError as cpe:
+        print(f"Error updating system time: {cpe}")
     except Exception as e:
-        print(f"Error setting time: {e}")
+        print(f"Unexpected error: {e}")
 
 client = mqtt.Client()
 client.on_connect = on_connect
