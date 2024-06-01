@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Define variables
-REPO_URL="https://github.com/yourusername/yourrepo.git"
-CLONE_DIR="/home/$(whoami)/yourrepo"
+REPO_URL="https://github.com/kylene-nicole/sense-c-hat.git"
+CLONE_DIR="/home/$(whoami)/logging"
 PYTHON_SCRIPT_PATH="$CLONE_DIR/record_time.py"
 SERVICE_FILE_PATH="/etc/systemd/system/record_time.service"
 CURRENT_USER=$(whoami)
@@ -13,6 +13,8 @@ sudo apt-get install -y git
 
 # Ensure Python3 and pip3 are installed
 sudo apt-get install -y python3 python3-pip
+sudo apt install python3-spidev
+sudo apt install python3-smbus
 
 # Clone the GitHub repository
 if [ -d "$CLONE_DIR" ]; then

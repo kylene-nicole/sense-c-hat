@@ -22,3 +22,4 @@ sudo apt install -y python3-rpi-lgpio
 cd ..
 rm -rf master.zip lg-master
 
+
