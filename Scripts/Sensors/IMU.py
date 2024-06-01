@@ -3,6 +3,7 @@
 import time
 import smbus
 import math
+import csv 
 import logging 
 from logging.handlers import RotatingFileHandler
 
@@ -353,44 +354,32 @@ class IMU(object):
     MotionVal[8]=Mag[2]
     
 if __name__ == '__main__':
-  import time
-  print("\nSense HAT Test Program ...\n")
-  MotionVal=[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
-  imu=IMU()
-  while True:
-    try:
-        imu.QMI8658_Gyro_Accel_Read()
-        imu.AK09918_MagRead()
-        imu.icm20948CalAvgValue()
-        imu.imuAHRSupdate(MotionVal[0] * 0.0175, MotionVal[1] * 0.0175,MotionVal[2] * 0.0175,
-                    MotionVal[3],MotionVal[4],MotionVal[5], 
-                    MotionVal[6], MotionVal[7], MotionVal[8])
-        pitch = math.asin(-2 * q1 * q3 + 2 * q0* q2)* 57.3
-        roll  = math.atan2(2 * q2 * q3 + 2 * q0 * q1, -2 * q1 * q1 - 2 * q2* q2 + 1)* 57.3
-        yaw   = math.atan2(-2 * q1 * q2 - 2 * q0 * q3, 2 * q2 * q2 + 2 * q3 * q3 - 1) * 57.3
-        logger.info("\r\n /-------------------------------------------------------------/ \r\n")
-        logger.info('\r\n Roll = %.2f , Pitch = %.2f , Yaw = %.2f\r\n'%(roll,pitch,yaw))
-        logger.info('\r\nAcceleration:  X = %d , Y = %d , Z = %d\r\n'%(Accel[0],Accel[1],Accel[2]))  
-        logger.info('\r\nGyroscope:     X = %d , Y = %d , Z = %d\r\n'%(Gyro[0],Gyro[1],Gyro[2]))
-        logger.info('\r\nMagnetic:      X = %d , Y = %d , Z = %d\r\n'%((Mag[0]),Mag[1],Mag[2]))
-        logger.info("QMITemp=%.2f C\r\n"%imu.QMI8658_readTemp())
-        time.sleep(0.1)
-    except(KeyboardInterrupt):
-        print("\n")
-        break
-    except Exception as e:
-        logger.exception("Exception in main loop")
-        print("Program ended due to an error:", e)
-
-
-
-       
-      
-         
-      
-
-
-
-
-
-      
+  try:
+    print("\nSense HAT Test Program ...\n")
+    MotionVal=[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
+    imu=IMU()
+  
+    with open(log_file, mode='w', newline='') as file:
+      writer = csv.writer(file)
+      writer.writerow(["timestamp", "roll", "pitch", "yaw", "accel_x", "accel_y", "accel_z", "gyro_x", "gyro_y", "gyro_z", "mag_x", "mag_y", "mag_z", "temp"])
+        
+    imu = IMU()
+    while True:
+      imu.QMI8658_Gyro_Accel_Read()
+      imu.AK09918_MagRead()
+      imu.icm20948CalAvgValue()
+      imu.imuAHRSupdate(MotionVal[0] * 0.0175, MotionVal[1] * 0.0175, MotionVal[2] * 0.0175,
+                        MotionVal[3], MotionVal[4], MotionVal[5],
+                        MotionVal[6], MotionVal[7], MotionVal[8])
+      pitch = math.asin(-2 * q1 * q3 + 2 * q0 * q2) * 57.3
+      roll = math.atan2(2 * q2 * q3 + 2 * q0 * q1, -2 * q1 * q1 - 2 * q2 * q2 + 1) * 57.3
+      yaw = math.atan2(-2 * q1 * q2 - 2 * q0 * q3, 2 * q2 * q2 + 2 * q3 * q3 - 1) * 57.3
+      with open(log_file, mode='a', newline='') as file:
+          writer = csv.writer(file)
+          writer.writerow([datetime.now(), roll, pitch, yaw, Accel[0], Accel[1], Accel[2], Gyro[0], Gyro[1], Gyro[2], Mag[0], Mag[1], Mag[2], imu.QMI8658_readTemp()])
+      time.sleep(0.1)
+  except Exception as e:
+      with open(log_file, mode='a', newline='') as file:
+          writer = csv.writer(file)
+          writer.writerow([datetime.now(), f"Exception in main loop: {str(e)}"])
+      print("Program ended due to an error:", e)
