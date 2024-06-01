@@ -1,0 +1,7 @@
+#MAKE SCRIPTS EXECUTABLE
+chmod +x /home/$(whoami)/setup_service.sh
+chmod +x /home/$(whoami)/install_lgpio.sh
+
+#RUN SCRIPT
+sudo /home/$(whoami)/setup_service.sh
+sudo /home/$(whoami)/install_lgpio.sh

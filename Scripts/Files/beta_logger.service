@@ -1,0 +1,15 @@
+[Unit]
+Description=Record Time Every 5 Seconds
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/pi/record_time.py
+WorkingDirectory=/home/pi
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+RestartSec=5
+User=pi
+
+[Install]
+WantedBy=multi-user.target

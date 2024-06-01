@@ -1,6 +1,0 @@
-Android App (Time and GPS Provider):
-
-GPS Logging: 
-    Implement a background service that captures GPS coordinates and logs them locally or sends them to a server.
-Time Updates via MQTT: 
-    The same service can periodically send the current system time to the Raspberry Pi.
