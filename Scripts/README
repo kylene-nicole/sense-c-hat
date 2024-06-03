@@ -5,3 +5,6 @@ chmod +x /home/$(whoami)/dependencies.sh
 #RUN SCRIPT
 sudo /home/$(whoami)/setup_service.sh
 sudo /home/$(whoami)/dependencies.sh
+
+
+REPO - "https://github.com/kylene-nicole/sense-c-hat.git"
