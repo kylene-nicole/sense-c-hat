@@ -1,0 +1,12 @@
+[Unit]
+Description=Temperature and Humidity Service
+After=time.service
+
+[Service]
+ExecStart=/usr/bin/python3 /path/to/TEMP-HUM.py
+Restart=always
+User=pi
+WorkingDirectory=/path/to/
+
+[Install]
+WantedBy=multi-user.target
