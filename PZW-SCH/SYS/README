@@ -1,0 +1,41 @@
+Make a systemd file for each of the following files:
+- BLE time_client.py
+- IMY.py
+- SHTC3.py
+
+# etc/systemd/system --> make service files
+
+# CLI
+sudo chmod 644 /etc/systemd/system/time.service
+sudo chmod 644 /etc/systemd/system/imu.service
+sudo chmod 644 /etc/systemd/system/temp-hum.service
+
+sudo systemctl daemon-reload
+
+sudo systemctl enable time.service
+sudo systemctl enable imu.service
+sudo systemctl enable temp-hum.service
+
+sudo systemctl start time.service
+sudo systemctl start imu.service
+sudo systemctl start temp-hum.service
+
+# to check
+sudo systemctl status time.service
+sudo systemctl status imu.service
+sudo systemctl status temp-hum.service
+
+
+# SERVICE FILE
+[Unit]
+Description=IMU Service
+After=imu.service
+
+[Service]
+ExecStart=/usr/bin/python3 /home/NT-ZWH/Documents/beta-v0/sense-c-hat/PZW-SCH/IMU.py
+Restart=always
+User=pi
+WorkingDirectory=/home/NT-ZWH/Documents/beta-v0/sense-c-hat/PZW-SCH
+
+[Install]
+WantedBy=multi-user.target
