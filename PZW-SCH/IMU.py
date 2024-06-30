@@ -7,10 +7,11 @@ import logging
 import csv
 from datetime import datetime
 
+data_file = "./logs/imu.csv"
 log_file = "./logs/imu.log"
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("IMU")
-handler = logging.FileHandler(log_file)
+handler = logging.FileHandler(data_file)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
@@ -346,9 +347,13 @@ if __name__ == '__main__':
   MotionVal=[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
   imu=IMU()
 
-  with open(log_file, mode='w', newline='') as file:
+  with open(data_file, mode='w', newline='') as file:
       writer = csv.writer(file)
       writer.writerow(["timestamp", "roll", "pitch", "yaw", "accel_x", "accel_y", "accel_z", "gyro_x", "gyro_y", "gyro_z", "mag_x", "mag_y", "mag_z", "temp"])
+
+  with open(log_file, mode='w', newline='') as file:
+      writer = csv.writer(file)
+      writer.writerow(["timestamp", "errors"])
         
   while True:
     try:
@@ -367,7 +372,7 @@ if __name__ == '__main__':
         # print('\r\nGyroscope:     X = %d , Y = %d , Z = %d\r\n'%(Gyro[0],Gyro[1],Gyro[2]))
         # print('\r\nMagnetic:      X = %d , Y = %d , Z = %d\r\n'%((Mag[0]),Mag[1],Mag[2]))
         # print("QMITemp=%.2f C\r\n"%imu.QMI8658_readTemp())
-        with open(log_file, mode='a', newline='') as file:
+        with open(data_file, mode='a', newline='') as file:
           writer = csv.writer(file)
           writer.writerow([datetime.now(), roll, pitch, yaw, Accel[0], Accel[1], Accel[2], Gyro[0], Gyro[1], Gyro[2], Mag[0], Mag[1], Mag[2], imu.QMI8658_readTemp()])
         time.sleep(0.1)
@@ -375,10 +380,10 @@ if __name__ == '__main__':
         with open(log_file, mode='a', newline='') as file:
             writer = csv.writer(file)
             writer.writerow([datetime.now(), f"Exception in main loop: {str(e)}"])
-        print("Program ended due to an error:", e)
+        # print("Program ended due to an error:", e)
         time.sleep(0.1)
     except(KeyboardInterrupt):
-        print("\n")
+        # print("\n")
         break
 
 
