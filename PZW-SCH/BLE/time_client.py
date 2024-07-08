@@ -3,6 +3,7 @@ from bleak import BleakClient
 from bleak import BleakScanner
 import subprocess
 from datetime import datetime
+import time
 
 # Replace with your device's name and UUIDs
 DEVICE_NAME = "P4"
@@ -45,6 +46,7 @@ async def main():
             except Exception as e:
                 print(f"Error: {e}")
     except:
+        time.sleep(5)
         main()
 
 if __name__ == "__main__":
