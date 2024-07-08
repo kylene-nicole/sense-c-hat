@@ -1,31 +1,53 @@
 import asyncio
 from bleak import BleakClient, BleakScanner
+from datetime import datetime
+import subprocess
 
-device_name = "YourDeviceName"
-characteristic_uuid = "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+# Replace with the Pixel 4 device's name
+PIXEL_4_DEVICE_NAME = "P4"
+
+# Replace with the UUID of the characteristic you are reading from
+CHARACTERISTIC_UUID = "12345678-1234-5678-1234-56789abcdef2"
+
+def update_system_time(timestamp_str):
+    try:
+        # Convert the timestamp string to a datetime object
+        timestamp = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
+        
+        # Format the datetime object to the required format for date command
+        formatted_time = timestamp.strftime("%Y-%m-%d %H:%M:%S")
+
+        # Use the date command to set the system time
+        subprocess.run(["sudo", "date", "-s", formatted_time])
+        print(f"System time updated to: {formatted_time}")
+    except ValueError as e:
+        print(f"Error parsing timestamp: {e}")
 
 async def notification_handler(sender, data):
-    """Simple notification handler which prints the data received."""
-    print(f"Notification from {sender}: {data}")
+    timestamp_str = data.decode("utf-8")
+    print(f"Received timestamp: {timestamp_str}")
+    update_system_time(timestamp_str)
 
-async def scan_and_connect(device_name, characteristic_uuid):
+async def run():
     devices = await BleakScanner.discover()
-    target_device = None
+    pixel_device = None
+
     for device in devices:
-        if device_name in device.name:
-            target_device = device
+        if device.name == PIXEL_4_DEVICE_NAME:
+            pixel_device = device
             break
 
-    if not target_device:
-        print(f"Device with name {device_name} not found.")
+    if not pixel_device:
+        print(f"Device with name '{PIXEL_4_DEVICE_NAME}' not found")
         return
 
-    async with BleakClient(target_device) as client:
-        await client.start_notify(characteristic_uuid, notification_handler)
-        print(f"Connected to {target_device.name} and listening to UUID {characteristic_uuid}...")
-        await asyncio.sleep(30)  # Listen for 30 seconds
-        await client.stop_notify(characteristic_uuid)
+    async with BleakClient(pixel_device.address) as client:
+        await client.start_notify(CHARACTERISTIC_UUID, notification_handler)
+        print("Listening for notifications...")
+        
+        # Keep the script running
+        while True:
+            await asyncio.sleep(1)
 
-if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(scan_and_connect(device_name, characteristic_uuid))
+loop = asyncio.get_event_loop()
+loop.run_until_complete(run())

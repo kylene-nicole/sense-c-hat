@@ -1,3 +1,22 @@
+# Install
+SOURCE: https://www.waveshare.com/wiki/Sense_HAT_(C)
+
+sudo apt update && sudo apt upgrade -y
+wget https://github.com/joan2937/lg/archive/master.zip
+unzip master.zip
+cd lg-master
+sudo make install
+sudo apt install -y python3-rpi-lgpio
+cd ..
+rm -rf master.zip lg-master
+
+
+sudo apt update
+sudo apt install python3-pip 
+sudo apt install python3-spidev
+sudo apt install python3-smbus
+
+
 Make a systemd file for each of the following files:
 - BLE time_client.py
 - IMY.py
