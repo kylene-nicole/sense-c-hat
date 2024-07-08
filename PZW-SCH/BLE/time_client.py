@@ -4,6 +4,15 @@ from bleak import BleakScanner
 import subprocess
 from datetime import datetime
 import time
+import logging 
+
+log_file = "./ble.log"
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("BLE")
+handler = logging.FileHandler(log_file)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 # Replace with your device's name and UUIDs
 DEVICE_NAME = "P4"
@@ -22,7 +31,7 @@ async def main():
                 break
 
         if not device:
-            print(f"Device {DEVICE_NAME} not found.")
+            logging.info(f"Device {DEVICE_NAME} not found.")
             return
 
         async with BleakClient(device.address) as client:
