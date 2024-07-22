@@ -106,7 +106,7 @@ if __name__ == "__main__":
     try:
         shtc3 = SHTC3(sbc, 1, SHTC3_I2C_ADDRESS)
 
-        with open(data_file, mode='w', newline='') as file:
+        with open(data_file, mode='a', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(["timestamp", "temperature", "humidity"])
         

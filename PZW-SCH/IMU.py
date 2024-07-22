@@ -347,11 +347,11 @@ if __name__ == '__main__':
   MotionVal=[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]
   imu=IMU()
 
-  with open(data_file, mode='w', newline='') as file:
+  with open(data_file, mode='a', newline='') as file:
       writer = csv.writer(file)
       writer.writerow(["timestamp", "roll", "pitch", "yaw", "accel_x", "accel_y", "accel_z", "gyro_x", "gyro_y", "gyro_z", "mag_x", "mag_y", "mag_z", "temp"])
 
-  with open(log_file, mode='w', newline='') as file:
+  with open(log_file, mode='a', newline='') as file:
       writer = csv.writer(file)
       writer.writerow(["timestamp", "errors"])
         
