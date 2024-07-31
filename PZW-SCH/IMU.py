@@ -7,8 +7,11 @@ import logging
 import csv
 from datetime import datetime
 
-data_file = "./logs/imu.csv"
-log_file = "./logs/imu.log"
+# data_file = "./logs/imu.csv"
+# log_file = "./logs/imu.log"
+
+data_file = f"./logs/imu_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+log_file = f"./logs/imu_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("IMU")
 handler = logging.FileHandler(data_file)

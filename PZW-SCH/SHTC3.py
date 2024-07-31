@@ -6,8 +6,11 @@ import logging
 import csv
 from datetime import datetime
 
-data_file = "./logs/shtc3.csv"
-log_file = "./logs/shtc3.log"
+# data_file = "./logs/shtc3.csv"
+# log_file = "./logs/shtc3.log"
+
+data_file = f"./logs/shtc3_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+log_file = f"./logs/shtc3_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("SHTC3")
 handler = logging.FileHandler(data_file)
